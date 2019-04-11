@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=2
+#PBS -l walltime=24:0:0
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N sc.job
+
+. /export/scratch/tpeirce/configfile.txt
+
+module load bowtie2
+
+SAMDIR=$PWD/21b_results
+TRANS=$SAMDIR/transcriptome_seq2iso.tab
+
+for SAM in $SAMDIR/*.sam; do
+ 	$SCRIPTS/samcount.pl $SAM $TRANS aligner=bowtie2 >$SAM.counts
+done
+
+$SCRIPTS/expression_compiler.pl *.sam.counts > $RESULTS/allcounts.txt
+
+
+cat $RESULTS/allcounts.txt | sed -r 's/_[GATC]{6}.fastq.trim.sam.counts//g' > $RESULTS/allcountsTankExpt.txt
+
+cat $RESULTS/allcounts.txt | sed -r 's/.fastq.trim.sam.counts//g' > $RESULTS/allcountsSSCExpt.txt
+

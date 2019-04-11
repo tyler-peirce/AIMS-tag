@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#. /export/scratch/tpeirce/configfile.txt
+
+. $PWD/configfile.txt
+
+module load bioperl
+
+
+perl $SCRIPTS/CDS_extractor_v3.pl $AN_QUERY $AN_BLAST allhits bridgegaps
+
+mkdir $PWD/10_results
+
+mv $PWD/07_results/*_CDS* $PWD/07_results/*_hits* $PWD/07_results/*PRO* mkdir $PWD/10_results 

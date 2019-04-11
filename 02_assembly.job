@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#PBS -l walltime=20:00:00
+#PBS -l nodes=2:ppn=20
+#PBS -l vmem=125gb
+#PBS -M email
+#PBS -m ae
+#PBS -N normalisation
+#PBS -S /bin/bash
+
+. configfile.txt
+
+mkdir $PWD/02_input
+mkdir $PWD/02_results
+
+module load java
+module load trinity
+
+Trinity --no_version_check --normalize_reads --seqType fq --max_memory 125G --CPU 40 --left $PREP/R1*.trim.cat --right $PREP/R2*.trim.cat --output $PWD/02_results
+
+module load bioperl
+
+perl $SCRIPTS/seq_stats.pl $ASSM/Trinity.fasta >$COUNTS/02_seq_stats_assm
+
+module load bioperl
+module load bbmap
+
+
+##remove sequences smaller than 400bp
+
+perl $SCRIPTS/removesmalls.pl 400 $ASSM/Trinity.fasta > $ASSM/02_Trinity-l400.fasta
+
+
+##run stats on the sequences with the <400bp sequences removed
+
+perl $SCRIPTS/seq_stats.pl $ASSM/02_Trinity-l400.fasta >>$COUNTS/02_seq_stats_assm_removesmall
+
+
+##run the GC content stats on the sequences
+
+sh bbmap/stats.sh in=$DATADIR/02_Trinity-l400.fasta > $COUNTS/02_GC_bbmap_Trinisty-l400

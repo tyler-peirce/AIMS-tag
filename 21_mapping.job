@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#PBS -l walltime=24:00:00
+#PBS -l nodes=1:ppn=4
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N mapping
+
+. /export/scratch/tpeirce/configfile.txt
+. $PWD/configfile.txt
+
+##setting up files for mapping
+mkdir 21_mapping.results
+RESULTS=$PWD/21_mapping.results
+
+#cp $PWD/07_results/07_ALL_iso_corrected.fasta $RESULTS/transcriptome.fasta
+
+
+###building transcriptome
+module load bowtie2
+module load bioperl
+
+bowtie2-build $RESULTS/transcriptome.fasta $RESULTS/transcriptome.fasta
+
+cp $RESULTS/transcriptome* $TAGSEQ/.
+cd $TAGSEQ
+perl $SCRIPTS/iRNAseq_bowtie2map.pl "trim$" $TAGSEQ/transcriptome.fasta > $RESULTS/21_maps.job
+
+
+module load bowtie2
+
+for TRIM in $TAGSEQ/*.trim; do
+
+bowtie2 --local -x $TAGSEQ/transcriptome.fasta -U $TRIM -S $TRIM.sam --no-hd --no-sq --no-unal -k 5
+
+done

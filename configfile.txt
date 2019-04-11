@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# GENERAL
+
+PWD=
+WORKDIR=$PWD
+
+###Search term for fastq file '@' followed by the next letter eg '@M'
+
+SEARCH=
+
+##Prepare
+
+FASTQ=$PWD/data
+PREP=$PWD/01_results
+COUNTS=$PWD/counts
+
+
+SCRIPTS=$PWD/bin
+
+
+##Assembly
+
+ASSM=$PWD/02_results
+
+###Uniprot
+
+BLAST=$PWD/03_results
+
+CHUNKSDIR=$BLAST/chunks
+LOGDIR=$BLAST/log
+DATADIR=$PWD/data
+CHUNKSIZE=500 # default: 200
+RESULTDIR=$BLAST
+
+#####BLAST UNIPROT
+
+UNIDB=$SCRIPTS/SwissPrott/uniprot_sprot.fasta
+UNICHUNKS=$CHUNKSDIR/Trinity-l400.fasta.copy
+
+
+###Annotation
+
+AN_BLAST=$PWD/03_results/ALL.uni.br
+AN_QUERY=$PWD/04_results/04_ALL_iso_corrected.fasta
+
+###08_getgenenames.job
+
+GGPREFIX=05_genenames
+
+###07_GO.job
+
+GOPREFIX=07_GO_
+
+
+####RNA Tag-seq
+
+##Qual trim and filter
+
+TAGSEQ=$PWD/tagseq
+
+###Search term for fastq file '@' followed by the next letter eg '@M'
+SEARCH=@HW

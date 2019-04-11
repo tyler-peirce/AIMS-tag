@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=2
+#PBS -l mem=16gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N uniprot_blast
+#PBS -p 1021
+#PBS -S /bin/bash
+
+. /export/scratch/tpeirce/bin/configfile.txt
+
+module load bioperl
+
+module load blast+
+
+BLASTCHUNK=$1
+UNIPROTDB=$2
+BLASTRESULTS=$3
+
+blastx -query $BLASTCHUNK -db $UNIPROTDB -evalue 0.0001 -num_threads 4 -num_descriptions 5 -num_alignments 5 -out $BLASTRESULTS.uni.br
+

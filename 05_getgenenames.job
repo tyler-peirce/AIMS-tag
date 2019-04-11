@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. $PWD/configfile.txt
+
+module load bioperl
+
+perl $SCRIPTS/getGeneNameFromUniProtKB.pl blast=$AN_BLAST prefix=$GGPREFIX fastaQuery=$AN_QUERY db=$UNIDB
+
+mkdir 05_results
+mv 05_genenames_* 05_results/.

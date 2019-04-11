@@ -1,0 +1,23 @@
+#!/bin/bash
+
+. $PWD/configfile.txt
+module load blast+
+
+#wget http://korflab.ucdavis.edu/Datasets/genome_completeness/core/248.prots.fa.gz
+#gunzip 248.prots.fa.gz
+
+mkdir $PWD/12_results
+mv 248.prots.fa $PWD/12_results
+
+cp $PWD/07_results/07_ALL_iso_corrected.fasta $PWD/12_results
+makeblastdb -in $PWD/12_results/07_ALL_iso_corrected.fasta  -dbtype nucl
+
+
+OUTPUT=$PWD/12_results/12_248.brtab
+tblastn -query $PWD/12_results/248.prots.fa -db $PWD/12_results/07_ALL_iso_corrected.fasta -evalue 1e-10 -outfmt "6 qseqid sseqid evalue bitscore qcovs" -max_target_seqs 1 -num_threads 16 >$OUTPUT
+
+
+
+#calculate percentage of represented KOGS
+
+cat $OUTPUT | perl -pe 's/.+(KOG\d+)\s.+/$1/' | sort -u | wc -l | awk '{print $1/248}' >$OUTPUT.percentKOG

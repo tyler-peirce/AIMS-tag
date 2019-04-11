@@ -3,7 +3,7 @@
 #PBS -l walltime=100:00:00
 #PBS -l nodes=1:ppn=2
 #PBS -l vmem=100gb
-#########add in email#PBS -M 
+#PBS -M email
 #PBS -m ae
 #PBS -N Repair
 #PBS -S /bin/bash
@@ -12,51 +12,52 @@
 
 module load fastx
 
-
+mkdir $COUNTS
+mkdir $PWD/01_results
 rm $COUNTS/01_counts.trim
 
 for SAMPLETRIM in $FASTQ/*.fastq; do
 SAMPLE=$(basename $SAMPLETRIM) && echo "sample $SAMPLE"
 
-   cat $FASTQ/$SAMPLE | fastx_clipper -a AAAAAAAAA -a TTTTTTTTT -a AGATCGGAA -l 50 -Q33 | fastq_quality_filter -Q33 -q 20 -p 80 >$FASTQ_TRIM/$SAMPLE.trim
+   cat $FASTQ/$SAMPLE | fastx_clipper -a AAAAAAAAA -a TTTTTTTTT -a AGATCGGAA -l 50 -Q33 | fastq_quality_filter -Q33 -q 20 -p 80 >$PREP/$SAMPLE.trim
 
-   LINE=$(cat $FASTQ_TRIM/$SAMPLE.trim | grep $SEARCH | wc -l)
+   LINE=$(cat $PREP/$SAMPLE.trim | grep $SEARCH | wc -l)
     echo "$SAMPLE $LINE" >> $COUNTS/01_counts.trim
 
-rm $COUNTS/02_counts.repair.dedup
+rm $COUNTS/01_counts.repair.dedup
 
 #####concatinate all left, all right together
 
-cat $FASTQ_TRIM/*_R1_*.fastq.trim >$FASTQ_TRIM/R1.trim.cat
-cat $FASTQ_TRIM/*_R2_*.fastq.trim >$FASTQ_TRIM/R2.trim.cat
+cat $FASTQ_TRIM/*_R1_*.fastq.trim >$PREP/R1.trim.cat
+cat $FASTQ_TRIM/*_R2_*.fastq.trim >$PREP/R2.trim.cat
 
-    SAMPLE_R1=$FASTQ_TRIM/R1.trim.cat
-    SAMPLE_R2=$FASTQ_TRIM/R2.trim.cat
+    SAMPLE_R1=$PREP/R1.trim.cat
+    SAMPLE_R2=$PREP/R2.trim.cat
 
 ####code for checking
 #echo "unp_sampler1_sampler2 = Unp_"$SAMPLE_R1"_"$SAMPLE_R2""
 #echo "file path sample_r1 $FASTQ_TRIM/$SAMPLE_R1"
 #echo "file path sample_rs $FASTQ_TRIM/$SAMPLE_R2"
 
-	cp $FASTQ_TRIM/$SAMPLE_R1 $FASTQ_TRIM/$SAMPLE_R2 .
+	cp $PREP/$SAMPLE_R1 $PREP/$SAMPLE_R2 .
 
 
     	perl $SCRIPTS/rePair.pl $SAMPLE_R1 $SAMPLE_R2
     ####this perl script adds 'R1_' 'R2_' and 'Unp_' to the start of the names###
 
     	LINE1=$(cat R1_$SAMPLE_R1 | grep $SEARCH | wc -l)
-        echo "R1_$SAMPLE_R1 $LINE1" >>$COUNTS/02_counts.repair.dedup
+        echo "R1_$SAMPLE_R1 $LINE1" >>$COUNTS/01_counts.repair.dedup
 
     	LINE2=$(cat R2_$SAMPLE_R2 | grep $SEARCH | wc -l)
-        echo "R2_$SAMPLE_R2 $LINE2" >>$COUNTS/02_counts.repair.dedup
+        echo "R2_$SAMPLE_R2 $LINE2" >>$COUNTS/01_counts.repair.dedup
 
     	LINE3=$(cat Unp_"$SAMPLE_R1"_"$SAMPLE_R2" | grep $SEARCH | wc -l)
-      	echo "Unp_"$SAMPLE_R1"_"$SAMPLE_R2" $LINE3" >>$COUNTS/02_counts.repair.dedup
+      	echo "Unp_"$SAMPLE_R1"_"$SAMPLE_R2" $LINE3" >>$COUNTS/01_counts.repair.dedup
 
 ####Deduplicating step
 
 
-    perl $SCRIPTS/dedupTranscriptome.pl left=R1_$SAMPLE_R1 right=R2_$SAMPLE_R2 unp=Unp_"$SAMPLE_R1"_"$SAMPLE_R2" >>$COUNTS/02_counts.repair.dedup
+    perl $SCRIPTS/dedupTranscriptome.pl left=R1_$SAMPLE_R1 right=R2_$SAMPLE_R2 unp=Unp_"$SAMPLE_R1"_"$SAMPLE_R2" >>$COUNTS/01_counts.repair.dedup
 
 #####putting reads together with suffixes /1 (for left and unpaired) and /2 for right reads
 
@@ -67,9 +68,9 @@ cat $FASTQ_TRIM/*_R2_*.fastq.trim >$FASTQ_TRIM/R2.trim.cat
 
 
 	
-	mv R1_$SAMPLE_R1 R2_$SAMPLE_R2 Unp_"$SAMPLE_R1"_"$SAMPLE_R2" $FASTQ_REPAIR
-	mv R1_$SAMPLE_R1.dedup R2_$SAMPLE_R2.dedup Unp_"$SAMPLE_R1"_"$SAMPLE_R2".dedup $FASTQ_DEDUP
-	mv R2p_suf2_$SAMPLE_R2 R1p_suf1_$SAMPLE_R1 $FASTQ_LAB
+	mv R1_$SAMPLE_R1 R2_$SAMPLE_R2 Unp_"$SAMPLE_R1"_"$SAMPLE_R2" $PREP
+	mv R1_$SAMPLE_R1.dedup R2_$SAMPLE_R2.dedup Unp_"$SAMPLE_R1"_"$SAMPLE_R2".dedup $PREP
+	mv R2p_suf2_$SAMPLE_R2 R1p_suf1_$SAMPLE_R1 $PREP
 	rm $SAMPLE_R1 $SAMPLE_R2 
 
 done

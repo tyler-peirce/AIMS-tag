@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1  
+#PBS -l vmem=20gb
+#PBS -M email
+#PBS -m abe
+#PBS -N isogroups
+#PBS -S /bin/bash
+
+. $PWD/configfile.txt
+mkdir $PWD/04_input
+mkdir $PWD/04_results
+
+module load bioperl
+
+grep ">" $DATADIR/02_Trinity-l400.fasta | perl -pe 's/>(TRINITY_DN(\d+_c\d+_g\d+)\S+)/$1\tisogroup$2/' > $PWD/04_results/04_seq2iso.tab
+cat $DATADIR/02_Trinity-l400.fasta | perl -pe 's/>(TRINITY_DN(\d+_c\d+_g\d+)\S+)/>$1 gene=isogroup$2/' > $PWD/04_results/04_ALL_iso_corrected.fasta
+
+## count stats
+
+
+$PWD/bbmap/stats.sh in=04_ALL_iso_corrected.fasta > $COUNTS/GC_04bbmap_final
+
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+####download the file $PWD/10_results/*.PRO.fas to your computer
+####upload the file onto the website http://weizhong-lab.ucsd.edu/webMGA/server/kog/
+####default e value = 0.001
+
+
+
+####once complete download the file
+
+JOBID=20181127232348492054065278
+#wget http://weizhong-lab.ucsd.edu/webMGA/result/output/"$JOBID".zip
+
+#mkdir $PWD/14_results
+mv $JOBID.zip $PWD/14_results/.
+unzip $PWD/14_results/$JOBID.zip  

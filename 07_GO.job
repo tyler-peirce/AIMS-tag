@@ -1,0 +1,15 @@
+#!/bin/bash
+
+. $PWD/configfile.txt
+
+module load bioperl
+
+cp $PWD/bin/SwissPrott/idmapping_selected.tab .
+
+perl $SCRIPTS/getGOfromUniProtKB.pl blast=$AN_BLAST prefix=$GOPREFIX fastaQuery=$AN_QUERY
+
+
+###cleanup steps
+rm $PWD/idmapping_selected.tab
+mkdir $PWD/07_results
+mv $PWD/07_GO_* $PWD/07_results/.

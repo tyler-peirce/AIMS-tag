@@ -1,0 +1,43 @@
+#!/bin/bash
+#run this script in the command line
+
+. /export/scratch/tpeirce/bin/configfile.txt
+
+mkdir $PWD/03_results
+module load blast+
+
+makeblastdb -in uniprot_sprot.fasta -dbtype prot
+
+module purge
+module load biopython
+
+# split data files and submit jobs
+for FILE in $DATADIR/* ; do
+echo "splitting $FILE..."
+BASE=$(basename $FILE).uniprotblast
+rm -r $CHUNKSDIR/$BASE $LOGDIR/$BASE
+mkdir -p $CHUNKSDIR/$BASE $LOGDIR/$BASE $PWD/03_$BASE.results
+cat $FILE | python $SCRIPTS/split_seqfile.py $CHUNKSDIR/$BASE/chunk $CHUNKSIZE
+
+for CHUNK in $CHUNKSDIR/$BASE/chunk.*; do
+echo "currnet chunkfile is $CHUNK"
+CHUNKBASE=$(basename $CHUNK)
+echo "current basefile is $CHUNKBASE"
+echo "should be ready to submit jobs"
+echo "chunks can be found in $CHUNKSDIR/$BASE"
+echo "database can be found in $UNIDB"
+echo "current chunk is $CHUNK"
+echo "sample is $BASE"
+echo "resultdir is $RESULTDIR"
+echo "OUTPUT log will be $LOGDIR/$BASE/testoutput.$BASECHUNK.$BASE.out"
+echo "ERROR log will be $LOGDIR/$BASE/testoutput.$BASECHUNK.$BASE.err"
+
+RESULTS=$BLAST/03_$BASE.results/$CHUNKBASE
+echo "results wil be in $RESULTS"
+
+qsub -o $LOGDIR/$BASE/testoutput.$CHUNKBASE.$BASE.out -e $LOGDIR/$BASE/testoutput.$CHUNKBASE.$BASE.err -F "$CHUNK $UNIDB $RESULTS" $PWD/3b_uniprot_blast.job
+
+done
+
+done
+

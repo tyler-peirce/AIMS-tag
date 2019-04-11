@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=2
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N Qual_trim_filter_tagseq
+#PBS -S /bin/bash
+
+. /export/scratch/tpeirce/configfile.txt
+
+
+module load fastx
+module load bioperl
+
+
+rm $COUNTS/20_tagseq.counts.trim
+
+for SAMPLETRIM in $TAGSEQ/SM*.fastq; do
+    SAMPLE=$(basename $SAMPLETRIM) && echo "sample $SAMPLE"
+        echo "sample $SAMPLE" >>$COUNTS/20_tagseq.counts.trim
+        cat $SAMPLETRIM | grep $SEARCH | wc -l >>$COUNTS/20_tagseq.counts.trim
+
+       perl $SCRIPTS/rnaseq_clipper.pl $SAMPLETRIM | fastx_clipper -a AAAAAAAA -l 20 -Q33 | fastx_clipper -a AGATCGGAAG -l 20 -Q33 | fastq_quality_filter -Q33 -q 20 -p 90 >$SAMPLETRIM.trim
+
+    LINE=$(cat $SAMPLETRIM.trim | grep $SEARCH | wc -l)
+    echo "$SAMPLETRIM.trim $LINE" >>$COUNTS/20_tagseq.counts.trim
+
+done
+
+$SCRIPTS/countreads.pl glob("$TAGSEQ/*.fast*") > $COUNTS/20_ReadCountStatsBySample.txt
+
+
+for SAMPLE in $RAW/*_L005_*; do
+SAMPLE=$(basename $SAMPLE)
+
+GROUP=$(echo "$SAMPLE" | awk -F "_" '{print $1}')
+echo "group search is $GROUP"
+
+cat $RAW/$GROUP* > $TAGSEQ/$GROUP.fastq
+done

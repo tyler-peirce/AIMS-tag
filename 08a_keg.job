@@ -1,0 +1,23 @@
+#!/bin/bash
+
+. $PWD/configfile.txt
+module load bioperl
+
+mkdir $PWD/08_results
+
+mkdir 13_results
+perl $SCRIPTS/fasta2SBH.pl $PWD/04_results/04_ALL_iso_corrected.fasta >$PWD/08_results/13_transcriptome_4kegg.fasta
+
+echo "###copy	the output from	13_KEG to your laptop ($PWD/13_results/13_transcriptome_4kegg.fasta)
+
+####use web browser to submit transcriptome_4kegg.fasta file to KEGG's KAAS server 
+####( http://www.genome.jp/kegg/kaas/ )
+
+####select SBH algorithm 
+####upload nucleotide query (transcriptome_4kegg.fasta)
+####select representative genes for model inverts
+#### copy this into the	representetive genes for inverts: dme, cel, nve, hmg, aqu, cin
+####(Drosophila, C.elegans, N.vec, Hydra, A.queenslandica, Ascidian)
+
+##### Once it is done, download the 'text' output from KAAS, name it query.ko (default)
+#####put this file back into your 13_results folder"
