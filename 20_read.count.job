@@ -7,36 +7,50 @@
 #PBS -m abe
 #PBS -N Qual_trim_filter_tagseq
 #PBS -S /bin/bash
+cd $PBS_O_WORKDIR
 
-. /export/scratch/tpeirce/configfile.txt
+. configfile.txt
 
 
 module load fastx
 module load bioperl
 
+mkdir $PWD/20_results
+RESULTSTRIM=$PWD/20_results
 
 rm $COUNTS/20_tagseq.counts.trim
+rm $COUNTS/20_ReadCountStatsBySample.txt
 
-for SAMPLETRIM in $TAGSEQ/SM*.fastq; do
-    SAMPLE=$(basename $SAMPLETRIM) && echo "sample $SAMPLE"
-        echo "sample $SAMPLE" >>$COUNTS/20_tagseq.counts.trim
-        cat $SAMPLETRIM | grep $SEARCH | wc -l >>$COUNTS/20_tagseq.counts.trim
+#for SAMPLETRIM in $TAGSEQ/*.fastq; do
+#    SAMPLE=$(basename $SAMPLETRIM) && echo "sample $SAMPLE"
+#        echo "sample $SAMPLE" >>$COUNTS/20_tagseq.counts.trim
+#        cat $SAMPLETRIM | grep $SEARCH2 | wc -l >>$COUNTS/20_tagseq.counts.trim
 
-       perl $SCRIPTS/rnaseq_clipper.pl $SAMPLETRIM | fastx_clipper -a AAAAAAAA -l 20 -Q33 | fastx_clipper -a AGATCGGAAG -l 20 -Q33 | fastq_quality_filter -Q33 -q 20 -p 90 >$SAMPLETRIM.trim
+#       perl $SCRIPTS/rnaseq_clipper.pl $SAMPLETRIM | fastx_clipper -a AAAAAAAA -l 20 -Q33 | fastx_clipper -a AGATCGGAAG -l 20 -Q33 | fastq_quality_filter -Q33 -q 20 -p 90 >$SAMPLETRIM.trim
 
-    LINE=$(cat $SAMPLETRIM.trim | grep $SEARCH | wc -l)
-    echo "$SAMPLETRIM.trim $LINE" >>$COUNTS/20_tagseq.counts.trim
+#    LINE=$(cat $SAMPLETRIM.trim | grep $SEARCH2 | wc -l)
+#    echo "$SAMPLE.trim $LINE" >>$COUNTS/20_tagseq.counts.trim
 
+#done
+
+#$SCRIPTS/countreads.pl glob("$TAGSEQ/*.fast*") > $COUNTS/20_ReadCountStatsBySample.txt
+
+mv $PWD/tagseq/*.trim $RESULTSTRIM/
+
+##cat samples
+##for tagseq there is likely to be a multiple files per sample, this step concatinates these together so there is one fastq file for each sample
+##this code may need tweaking for your data
+
+
+for SAMPLE in $RESULTSTRIM/*_L004_*; do
+        SAMPLE=$(basename $SAMPLE)
+
+        GROUP=$(echo "$SAMPLE" | awk -F "_" '{print $1"_"$2}')
+        echo "group search is $GROUP"
+
+        cat $RESULTSTRIM/$GROUP* >> $RESULTSTRIM/$GROUP.fastq
 done
 
-$SCRIPTS/countreads.pl glob("$TAGSEQ/*.fast*") > $COUNTS/20_ReadCountStatsBySample.txt
-
-
-for SAMPLE in $RAW/*_L005_*; do
-SAMPLE=$(basename $SAMPLE)
-
-GROUP=$(echo "$SAMPLE" | awk -F "_" '{print $1}')
-echo "group search is $GROUP"
-
-cat $RAW/$GROUP* > $TAGSEQ/$GROUP.fastq
-done
+mkdir $RESULTSTRIM/trim
+mv $RESULTSTRIM/*.trim $RESULTSTRIM/trim/.
+$SCRIPTS/countreads.pl glob "$RESULTSTRIM/*.fast*" >> $COUNTS/20_ReadCountStatsBySample.txt

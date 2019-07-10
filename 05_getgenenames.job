@@ -1,10 +1,19 @@
 #!/bin/bash
 
-. $PWD/configfile.txt
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N getgenenames
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
+
+. configfile.txt
 
 module load bioperl
 
 perl $SCRIPTS/getGeneNameFromUniProtKB.pl blast=$AN_BLAST prefix=$GGPREFIX fastaQuery=$AN_QUERY db=$UNIDB
 
-mkdir 05_results
-mv 05_genenames_* 05_results/.
+mkdir $PWD/05_results
+mv 05_genenames_* $PWD/05_results/.

@@ -1,15 +1,22 @@
 #!/bin/bash
 
-. $PWD/configfile.txt
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N GO
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
+
+. configfile.txt
 
 module load bioperl
 
-cp $PWD/bin/SwissPrott/idmapping_selected.tab .
 
 perl $SCRIPTS/getGOfromUniProtKB.pl blast=$AN_BLAST prefix=$GOPREFIX fastaQuery=$AN_QUERY
 
 
 ###cleanup steps
-rm $PWD/idmapping_selected.tab
 mkdir $PWD/07_results
 mv $PWD/07_GO_* $PWD/07_results/.

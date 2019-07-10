@@ -1,16 +1,27 @@
 #!/bin/bash
 
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N kog10b
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
+
 ####download the file $PWD/10_results/*.PRO.fas to your computer
 ####upload the file onto the website http://weizhong-lab.ucsd.edu/webMGA/server/kog/
 ####default e value = 0.001
 
 
 
-####once complete download the file
+####once complete, download the file
 
-JOBID=20181127232348492054065278
-#wget http://weizhong-lab.ucsd.edu/webMGA/result/output/"$JOBID".zip
+##put in your job ID below
+JOBID=20190614220204191148047307
+wget http://weizhong-lab.ucsd.edu/webMGA/result/output/"$JOBID".zip
 
-#mkdir $PWD/14_results
-mv $JOBID.zip $PWD/14_results/.
-unzip $PWD/14_results/$JOBID.zip  
+mkdir $PWD/10_results
+mv $JOBID.zip $PWD/10_results/.
+unzip $PWD/10_results/$JOBID.zip  
+mk $PWD/kog $PWD/10_results

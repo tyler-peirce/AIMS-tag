@@ -1,7 +1,16 @@
 #!/bin/bash
 
-. $PWD/configfile.txt
-###copy the output from 13_KEG to your laptop
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N keg08b
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
+
+. configfile.txt
+###copy the output from 08_results to your laptop
 
 ####use web browser to submit transcriptome_4kegg.fasta file to KEGG's KAAS server 
 ####( http://www.genome.jp/kegg/kaas/ )
@@ -15,14 +24,14 @@
 ##### Once it is done, download the 'text' output from KAAS, name it query.ko (default)
 ### then run the script below
 
-RESULTS=$PWD/13_results
+RESULTS=$PWD/08_results
 
 #non missing annotations
 cat $RESULTS/query.ko | awk '{if ($2!="") print }' > $RESULTS/iso2kegg.tab
 
 rm $RESULTS/iso2kegg.unique.ann.tab
 echo 'unique annotations' >>$RESULTS/iso2kegg.unique.ann.tab
-cat iso2kegg.tab | cut -f 2 | sort -u | wc -l >>$RESULTS/iso2kegg.unique.ann.tab
+cat $RESULTS/iso2kegg.tab | cut -f 2 | sort -u | wc -l >>$RESULTS/iso2kegg.unique.ann.tab
 
 echo 'total non missing annotations' >>$RESULTS/iso2kegg.unique.ann.tab 
-cat iso2kegg.tab | wc -l >> $RESULTS/iso2kegg.unique.ann.tab
+cat $RESULTS/iso2kegg.tab | wc -l >> $RESULTS/iso2kegg.unique.ann.tab

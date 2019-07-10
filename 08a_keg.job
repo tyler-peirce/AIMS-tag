@@ -1,14 +1,23 @@
 #!/bin/bash
 
-. $PWD/configfile.txt
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N KEG
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
+
+
+. configfile.txt
 module load bioperl
 
 mkdir $PWD/08_results
 
-mkdir 13_results
-perl $SCRIPTS/fasta2SBH.pl $PWD/04_results/04_ALL_iso_corrected.fasta >$PWD/08_results/13_transcriptome_4kegg.fasta
+perl $SCRIPTS/fasta2SBH.pl $PWD/04_results/04_ALL_iso_corrected.fasta >$PWD/08_results/08_transcriptome_4kegg.fasta
 
-echo "###copy	the output from	13_KEG to your laptop ($PWD/13_results/13_transcriptome_4kegg.fasta)
+echo "###copy	the output from	08a_keg.job to your laptop ($PWD/08_results/08_transcriptome_4kegg.fasta)
 
 ####use web browser to submit transcriptome_4kegg.fasta file to KEGG's KAAS server 
 ####( http://www.genome.jp/kegg/kaas/ )
@@ -20,4 +29,4 @@ echo "###copy	the output from	13_KEG to your laptop ($PWD/13_results/13_transcri
 ####(Drosophila, C.elegans, N.vec, Hydra, A.queenslandica, Ascidian)
 
 ##### Once it is done, download the 'text' output from KAAS, name it query.ko (default)
-#####put this file back into your 13_results folder"
+#####put this file back into your 08_results folder"

@@ -1,20 +1,32 @@
 #!/bin/bash
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N kog
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
 
-. $PWD/configfile.txt
+. configfile.txt
 module load blast+
 
+mkdir $PWD/09_results
+
+RESULTS=$PWD/09_results
+
+
 #wget http://korflab.ucdavis.edu/Datasets/genome_completeness/core/248.prots.fa.gz
-#gunzip 248.prots.fa.gz
-
-mkdir $PWD/12_results
-mv 248.prots.fa $PWD/12_results
-
-cp $PWD/07_results/07_ALL_iso_corrected.fasta $PWD/12_results
-makeblastdb -in $PWD/12_results/07_ALL_iso_corrected.fasta  -dbtype nucl
+mv 248.prots.fa.gz $RESULTS
+gunzip $RESULTS/248.prots.fa.gz
 
 
-OUTPUT=$PWD/12_results/12_248.brtab
-tblastn -query $PWD/12_results/248.prots.fa -db $PWD/12_results/07_ALL_iso_corrected.fasta -evalue 1e-10 -outfmt "6 qseqid sseqid evalue bitscore qcovs" -max_target_seqs 1 -num_threads 16 >$OUTPUT
+cp $AN_QUERY $RESULTS 
+makeblastdb -in $RESULTS/04_ALL_iso_corrected.fasta  -dbtype nucl
+
+
+OUTPUT=$RESULTS/09_248.brtab
+tblastn -query $RESULTS/248.prots.fa -db $RESULTS/04_ALL_iso_corrected.fasta -evalue 1e-10 -outfmt "6 qseqid sseqid evalue bitscore qcovs" -max_target_seqs 1 -num_threads 16 >$OUTPUT
 
 
 

@@ -1,14 +1,25 @@
 #!/bin/bash
 
-#. /export/scratch/tpeirce/configfile.txt
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N kog10a
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
 
-. $PWD/configfile.txt
+. configfile.txt
 
 module load bioperl
 
 
-perl $SCRIPTS/CDS_extractor_v3.pl $AN_QUERY $AN_BLAST allhits bridgegaps
+#perl $SCRIPTS/CDS_extractor_v3.pl $AN_QUERY $AN_BLAST allhits bridgegaps
 
-mkdir $PWD/10_results
+#mkdir $PWD/10_results
 
-mv $PWD/07_results/*_CDS* $PWD/07_results/*_hits* $PWD/07_results/*PRO* mkdir $PWD/10_results 
+mv $PWD/04_results/*_CDS* $PWD/04_results/*_hits* $PWD/04_results/*PRO* $PWD/10_results 
+
+####download the file $PWD/10_results/*.PRO.fas to your computer
+####upload the file onto the website http://weizhong-lab.ucsd.edu/webMGA/server/kog/
+####default e value = 0.001

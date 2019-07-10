@@ -8,8 +8,9 @@
 #PBS -N uniprot_blast
 #PBS -p 1021
 #PBS -S /bin/bash
+cd $PBS_O_WORKDIR
 
-. /export/scratch/tpeirce/bin/configfile.txt
+. configfile.txt
 
 module load bioperl
 

@@ -1,9 +1,18 @@
 #!/bin/bash
 
-. $PWD/configfile.txt
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -l vmem=20gb
+#PBS -M tyler.peirce@my.jcu.edu.au
+#PBS -m abe
+#PBS -N contiguity
+#PBS -S /bin/bash
+cd $PBS_O_WORKDIR
+
+. configfile.txt
 
 module load bioperl
 
-HITS=$PWD/10_results/04_ALL_iso_corrected_hits.tab
+HITS=$PWD/04_results/04_ALL_iso_corrected_hits.tab
 
-perl $SCRIPTS/contiguity.pl hits=$HITS threshold=0.75
+perl $SCRIPTS/contiguity.pl hits=$AN_QUERY threshold=0.75
