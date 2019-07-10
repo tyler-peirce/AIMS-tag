@@ -2,16 +2,16 @@
 
 # GENERAL
 
-PWD=
-WORKDIR=$PWD
+PWD=/export/scratch/irciniatrans
+WORKDIR=/export/scratch/irciniatrans
 
 ###Search term for fastq file '@' followed by the next letter eg '@M'
 
-SEARCH=
+SEARCH=@N
 
 ##Prepare
 
-FASTQ=$PWD/data
+FASTQ=$PWD/reference
 PREP=$PWD/01_results
 COUNTS=$PWD/counts
 
@@ -21,7 +21,7 @@ SCRIPTS=$PWD/bin
 
 ##Assembly
 
-ASSM=$PWD/02_results
+ASSM=$PWD/02_results_trinity
 
 ###Uniprot
 
@@ -29,13 +29,13 @@ BLAST=$PWD/03_results
 
 CHUNKSDIR=$BLAST/chunks
 LOGDIR=$BLAST/log
-DATADIR=$PWD/data
+DATADIR=$PWD/03_input
 CHUNKSIZE=500 # default: 200
 RESULTDIR=$BLAST
 
 #####BLAST UNIPROT
 
-UNIDB=$SCRIPTS/SwissPrott/uniprot_sprot.fasta
+UNIDB=$PWD/SwissPrott/uniprot_sprot.fasta
 UNICHUNKS=$CHUNKSDIR/Trinity-l400.fasta.copy
 
 
@@ -50,7 +50,7 @@ GGPREFIX=05_genenames
 
 ###07_GO.job
 
-GOPREFIX=07_GO_
+GOPREFIX=07_GO
 
 
 ####RNA Tag-seq
@@ -60,4 +60,4 @@ GOPREFIX=07_GO_
 TAGSEQ=$PWD/tagseq
 
 ###Search term for fastq file '@' followed by the next letter eg '@M'
-SEARCH=@HW
+SEARCH2=@D
